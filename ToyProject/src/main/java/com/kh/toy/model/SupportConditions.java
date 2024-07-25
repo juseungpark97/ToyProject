@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
+@Table(name = "SupportConditions")
 public class SupportConditions {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

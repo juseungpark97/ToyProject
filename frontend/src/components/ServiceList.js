@@ -1,3 +1,4 @@
+// ServiceList.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -41,26 +42,35 @@ const ServiceLink = styled.a`
 
 const ServiceList = () => {
   const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get('http://localhost:8088/api/services');
+        const response = await axios.get('http://localhost:8088/api/fetchAllServiceList');
+        console.log(response.data); // 서버 응답 확인
         setServices(response.data);
       } catch (error) {
         console.error('Error fetching services:', error);
+        setError('데이터를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchServices();
   }, []);
 
+  if (loading) return <p>로딩 중...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
     <ServiceListContainer>
       <Title>공공 서비스 목록</Title>
       <ul>
-        {services.map((service) => (
-          <ServiceItem key={service.서비스ID}>
+        {Array.isArray(services) ? services.map((service, index) => (
+          <ServiceItem key={`${service.서비스ID}-${index}`}>
             <ServiceTitle>{service.서비스명}</ServiceTitle>
             <ServiceDetails><strong>부서명:</strong> {service.부서명}</ServiceDetails>
             <ServiceDetails><strong>사용자 구분:</strong> {service.사용자구분}</ServiceDetails>
@@ -79,7 +89,7 @@ const ServiceList = () => {
             <ServiceDetails><strong>지원 대상:</strong> {service.지원대상}</ServiceDetails>
             <ServiceDetails><strong>지원 유형:</strong> {service.지원유형}</ServiceDetails>
           </ServiceItem>
-        ))}
+        )) : <p>데이터를 불러오는 중...</p>}
       </ul>
     </ServiceListContainer>
   );
