@@ -5,12 +5,12 @@
 ## 사용된 기술
 
 - **프론트엔드:**
-  - React
-  - Vite ^5.4.1
+  - React: 18.3.1
+  - Vite: 5.4.1
 - **백엔드:**
-  - Spring Boot
+  - Spring Boot: 3.3.2
   - Spring Data JPA
-  - Oracle Database
+  - Oracle Database: 21c Express Edition Release 21.0.0.0.0 - Production Version 21.3.0.0.0
 - **개발 도구:**
   - JDK: Amazon Corretto 17
   - Spring Tool Suite (STS): 4.24.0.RELEASE
@@ -24,10 +24,8 @@
 - **효율적인 HMR (Hot Module Replacement)**: 빠른 코드 업데이트를 위한 핫 모듈 교체 기능을 지원합니다.
 - **최신 웹 기술 지원**: 애플리케이션이 최신 브라우저에서 원활하게 작동하도록 보장합니다.
 
-## 설치 및 설정
+## 설정
 
-1. [JDK: Amazon Corretto 17](https://aws.amazon.com/ko/corretto/) 설치
-2. [Node.js](https://nodejs.org/) 설치
 3. 프로젝트 설정:
 
 ```bash
