@@ -8,9 +8,9 @@
   - React: 18.3.1
   - Vite: 5.4.1
 - **백엔드:**
-  - Spring Boot: 3.3.2
+  - Spring Boot: 3.3.3
   - Spring Data JPA
-  - Oracle Database: 21c Express Edition Release 21.0.0.0.0 - Production Version 21.3.0.0.0
+  - mysql  Ver 9.0.1 for macos14.4 on arm64
 - **개발 도구:**
   - JDK: Amazon Corretto 17
   - Spring Tool Suite (STS): 4.24.0.RELEASE
