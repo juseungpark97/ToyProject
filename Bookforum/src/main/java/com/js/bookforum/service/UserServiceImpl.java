@@ -1,27 +1,43 @@
 package com.js.bookforum.service;
 
-import com.js.bookforum.entity.User;
-import com.js.bookforum.repository.UserRepository;
-import com.js.bookforum.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.js.bookforum.entity.Role;
+import com.js.bookforum.entity.User;
+import com.js.bookforum.repository.RoleRepository;
+import com.js.bookforum.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository; // RoleRepository 의존성 추가
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public User createUser(User user) {
-        // 새로운 사용자 생성
-        return userRepository.save(user);
+    	String encodedPassword = passwordEncoder.encode(user.getPassword());
+    	
+        Role userRole = roleRepository.findByName("USER")
+        				.orElseThrow(() -> new RuntimeException("User role not found"));
+        User newUser = User.builder()
+        				.name(user.getName())
+        				.email(user.getEmail())
+        				.password(encodedPassword)
+        				.registrationDate(new Date())
+        				.role(userRole)
+        				.build();
+       
+        
+        return userRepository.save(newUser);
     }
 
     @Override

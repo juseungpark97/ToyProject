@@ -14,13 +14,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.js.bookforum.entity.Role;
 import com.js.bookforum.entity.User;
+import com.js.bookforum.repository.RoleRepository;
 import com.js.bookforum.repository.UserRepository;
 
 class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository; // UserRepository를 모킹합니다.
+
+    @Mock
+    private RoleRepository roleRepository; // RoleRepository를 모킹합니다.
 
     @InjectMocks
     private UserServiceImpl userService; // UserServiceImpl을 테스트합니다.
@@ -32,9 +37,15 @@ class UserServiceImplTest {
 
     @Test
     void testCreateUser() {
+        // 테스트할 Role 객체 생성
+        Role userRole = new Role(1L, "USER", "Standard user role", null);
+
         // 테스트할 User 객체 생성
         User user = new User();
         user.setEmail("test@example.com");
+
+        // roleRepository.findByName() 호출 시 Optional.of(userRole) 반환하도록 설정
+        when(roleRepository.findByName("USER")).thenReturn(Optional.of(userRole));
 
         // userRepository.save() 호출 시 user 객체를 반환하도록 설정
         when(userRepository.save(user)).thenReturn(user);
@@ -44,6 +55,8 @@ class UserServiceImplTest {
 
         // 결과 검증
         assertEquals(user.getEmail(), createdUser.getEmail()); // 생성된 사용자의 이메일 검증
+        assertEquals(userRole, createdUser.getRole()); // 생성된 사용자의 역할 검증
+        verify(roleRepository, times(1)).findByName("USER"); // roleRepository의 findByName() 메서드가 한 번 호출되었는지 검증
         verify(userRepository, times(1)).save(user); // userRepository의 save() 메서드가 한 번 호출되었는지 검증
     }
 
