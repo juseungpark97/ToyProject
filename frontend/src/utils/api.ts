@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/', // 백엔드 API URL
+  baseURL: 'http://localhost:8080',
+  withCredentials: true
 });
 
 // 요청 인터셉터를 추가하여 모든 요청에 토큰을 추가

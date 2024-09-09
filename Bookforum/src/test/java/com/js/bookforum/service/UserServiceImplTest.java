@@ -1,91 +1,151 @@
 package com.js.bookforum.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.js.bookforum.entity.Role;
 import com.js.bookforum.entity.User;
 import com.js.bookforum.repository.RoleRepository;
 import com.js.bookforum.repository.UserRepository;
 
-class UserServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+public class UserServiceImplTest {
 
     @Mock
-    private UserRepository userRepository; // UserRepository를 모킹합니다.
+    private UserRepository userRepository;
 
     @Mock
-    private RoleRepository roleRepository; // RoleRepository를 모킹합니다.
+    private RoleRepository roleRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private UserServiceImpl userService; // UserServiceImpl을 테스트합니다.
+    private UserServiceImpl userService;
+
+    private User testUser;
+    private Role testRole;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this); // Mockito 모킹 초기화
+        testRole = new Role();
+        testRole.setName("USER");
+
+        testUser = User.builder()
+                .userId(1L)
+                .name("John Doe")
+                .email("johndoe@example.com")
+                .password("password")
+                .registrationDate(new Date())
+                .role(testRole)
+                .build();
     }
 
     @Test
     void testCreateUser() {
-        // 테스트할 Role 객체 생성
-        Role userRole = new Role(1L, "USER", "Standard user role", null);
+        // given
+        when(roleRepository.findByName("USER")).thenReturn(Optional.of(testRole));
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            user.setUserId(1L); // ID 설정 (DB에 저장된 것처럼)
+            return user;
+        });
 
-        // 테스트할 User 객체 생성
-        User user = new User();
-        user.setEmail("test@example.com");
+        // when
+        User createdUser = userService.createUser(testUser);
 
-        // roleRepository.findByName() 호출 시 Optional.of(userRole) 반환하도록 설정
-        when(roleRepository.findByName("USER")).thenReturn(Optional.of(userRole));
-
-        // userRepository.save() 호출 시 user 객체를 반환하도록 설정
-        when(userRepository.save(user)).thenReturn(user);
-
-        // UserServiceImpl의 createUser 메서드를 호출하여 테스트 수행
-        User createdUser = userService.createUser(user);
-
-        // 결과 검증
-        assertEquals(user.getEmail(), createdUser.getEmail()); // 생성된 사용자의 이메일 검증
-        assertEquals(userRole, createdUser.getRole()); // 생성된 사용자의 역할 검증
-        verify(roleRepository, times(1)).findByName("USER"); // roleRepository의 findByName() 메서드가 한 번 호출되었는지 검증
-        verify(userRepository, times(1)).save(user); // userRepository의 save() 메서드가 한 번 호출되었는지 검증
+        // then
+        assertNotNull(createdUser);
+        assertEquals("John Doe", createdUser.getName());
+        assertEquals("johndoe@example.com", createdUser.getEmail());
+        assertEquals("encodedPassword", createdUser.getPassword());
+        assertEquals(testRole, createdUser.getRole());
     }
 
     @Test
-    void testGetUserById_UserExists() {
-        // 테스트할 User 객체 생성
-        User user = new User();
-        user.setUserId(1L);
+    void testGetUserById() {
+        // given
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
-        // userRepository.findById() 호출 시 Optional.of(user) 반환하도록 설정
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-        // UserServiceImpl의 getUserById 메서드를 호출하여 테스트 수행
+        // when
         User foundUser = userService.getUserById(1L);
 
-        // 결과 검증
-        assertEquals(user.getUserId(), foundUser.getUserId()); // 조회된 사용자의 ID 검증
-        verify(userRepository, times(1)).findById(1L); // userRepository의 findById() 메서드가 한 번 호출되었는지 검증
+        // then
+        assertNotNull(foundUser);
+        assertEquals("John Doe", foundUser.getName());
     }
 
     @Test
-    void testGetUserById_UserNotFound() {
-        // userRepository.findById() 호출 시 Optional.empty() 반환하도록 설정
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+    void testGetAllUsers() {
+        // given
+        when(userRepository.findAll()).thenReturn(List.of(testUser));
 
-        // UserServiceImpl의 getUserById 메서드가 RuntimeException을 던지는지 테스트
-        assertThrows(RuntimeException.class, () -> userService.getUserById(1L));
+        // when
+        List<User> users = userService.getAllUsers();
 
-        // userRepository의 findById() 메서드가 한 번 호출되었는지 검증
-        verify(userRepository, times(1)).findById(1L);
+        // then
+        assertNotNull(users);
+        assertEquals(1, users.size());
+        assertEquals("John Doe", users.get(0).getName());
+    }
+
+    @Test
+    void testUpdateUser() {
+        // given
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User updateUser = User.builder()
+                .name("Jane Doe")
+                .email("janedoe@example.com")
+                .password("newpassword")
+                .build();
+
+        // when
+        User updatedUser = userService.updateUser(1L, updateUser);
+
+        // then
+        assertNotNull(updatedUser);
+        assertEquals("Jane Doe", updatedUser.getName());
+        assertEquals("janedoe@example.com", updatedUser.getEmail());
+    }
+
+    @Test
+    void testDeleteUser() {
+        // when
+        userService.deleteUser(1L);
+
+        // then
+        verify(userRepository).deleteById(1L);
+    }
+
+    @Test
+    void testFindByEmail() {
+        // given
+        when(userRepository.findByEmail("johndoe@example.com")).thenReturn(Optional.of(testUser));
+
+        // when
+        User foundUser = userService.findByEmail("johndoe@example.com");
+
+        // then
+        assertNotNull(foundUser);
+        assertEquals("John Doe", foundUser.getName());
     }
 }

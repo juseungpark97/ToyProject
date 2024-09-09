@@ -1,11 +1,11 @@
 package com.js.bookforum.security;
 
 import java.util.Date;
-
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import io.jsonwebtoken.*;
 
 @Component
 public class JwtTokenProvider {
@@ -24,23 +24,26 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds); // 토큰의 만료 시간 설정
 
+        // SecretKeySpec을 사용하여 비밀 키를 Key 객체로 생성
+        Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey) // 서명 알고리즘과 비밀 키 설정
+                .signWith(key, SignatureAlgorithm.HS256) // 새로운 방식으로 서명
                 .compact();
     }
 
     // JWT 토큰에서 이메일 추출
     public String getEmailFromToken(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parserBuilder().setSigningKey(secretKey.getBytes()).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     // JWT 토큰 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(secretKey.getBytes()).build().parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             // 예외 처리 로직 (예: 토큰이 만료되었거나 손상된 경우)
