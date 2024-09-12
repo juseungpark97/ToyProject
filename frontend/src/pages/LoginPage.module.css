@@ -2,7 +2,7 @@
 
 /* 전체 페이지 컨테이너 */
 .container {
-    max-width: 400px;
+    max-width: 399px;
     margin: 10vh auto;
     padding: 30px;
     display: flex;
