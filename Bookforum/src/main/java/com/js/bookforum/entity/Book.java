@@ -55,6 +55,6 @@ public class Book {
     @OneToMany(mappedBy = "book")
     private Set<Review> reviews;
 
-    @Column(name = "image_url", length = 2048)
+    @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 }

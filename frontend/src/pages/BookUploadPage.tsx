@@ -53,7 +53,7 @@ const BookUploadPage: React.FC = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      alert('Book uploaded successfully: ' + response.data.title);
+      alert('책 업로드 성공 :  ' + response.data.title);
     } catch (error) {
       console.error('Error uploading book:', error);
     }

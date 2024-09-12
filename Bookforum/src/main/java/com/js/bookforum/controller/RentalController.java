@@ -60,4 +60,37 @@ public class RentalController {
 
         return ResponseEntity.ok("도서가 성공적으로 대여되었습니다.");
     }
+    
+    @PostMapping("/check")
+    public ResponseEntity<Boolean> checkRentalStatus(@RequestBody Map<String, Long> requestBody, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long bookId = requestBody.get("bookId");
+        User user = customUserDetails.getUser();
+        if (bookId == null) {
+            return ResponseEntity.badRequest().body(false);
+        }
+       
+        
+        Rental rental = rentalService.findByUserAndBook(user, bookId);
+        boolean isRented = rental != null && rental.getReturnDate() == null;
+
+        return ResponseEntity.ok(isRented);
+    }
+    
+    @PostMapping("/return")
+    public ResponseEntity<String> returnBook(@RequestBody Map<String, Long> requestBody, 
+                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long bookId = requestBody.get("bookId");
+        if (bookId == null) {
+            return ResponseEntity.badRequest().body("bookId는 필수입니다.");
+        }
+
+        User user = customUserDetails.getUser();
+        
+        try {
+            rentalService.returnBook(user, bookId);
+            return ResponseEntity.ok("도서가 성공적으로 반납되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

@@ -10,6 +10,7 @@ import { login } from './redux/slices/authSlice';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './redux/store';
+import BookUploadPage from './pages/BookUploadPage';
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -33,6 +34,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/upload" element={<BookUploadPage />} />
             <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
             <Route path="/book/:bookId" element={<PrivateRoute><BookDetailPage /></PrivateRoute>} /> {/* 상세 페이지 라우트 추가 */}
           </Routes>
