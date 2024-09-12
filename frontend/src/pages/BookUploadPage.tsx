@@ -10,8 +10,7 @@ const BookUploadPage: React.FC = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [publicationDate, setPublicationDate] = useState('');
-  const [genre, setGenre] = useState('');
-  const [stockQuantity, setStockQuantity] = useState(0);
+  const [stockQuantity, setStockQuantity] = useState<string>('0'); // 기본값을 '0'으로 설정
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -34,17 +33,28 @@ const BookUploadPage: React.FC = () => {
     }
   };
 
+  const handleStockQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // 숫자 입력만 허용 (숫자 외의 문자는 모두 제거)
+    const numericValue = value.replace(/[^0-9]/g, ''); 
+
+    setStockQuantity(numericValue);
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!file) return;
+
+    // 문자열로 입력된 stockQuantity를 int로 변환
+    const parsedStockQuantity = parseInt(stockQuantity, 10);
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('title', title);
     formData.append('author', author);
     formData.append('publicationDate', publicationDate);
-    formData.append('genre', genre);
-    formData.append('stockQuantity', stockQuantity.toString());
+    formData.append('stockQuantity', isNaN(parsedStockQuantity) ? '0' : parsedStockQuantity.toString());
     formData.append('categoryId', categoryId?.toString() || '');
 
     try {
@@ -53,7 +63,7 @@ const BookUploadPage: React.FC = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      alert('책 업로드 성공 :  ' + response.data.title);
+      alert('책 업로드 성공: ' + response.data.title);
     } catch (error) {
       console.error('Error uploading book:', error);
     }
@@ -92,23 +102,15 @@ const BookUploadPage: React.FC = () => {
         />
       </div>
       <div>
-        <label htmlFor="genre">Genre:</label>
-        <input
-          type="text"
-          id="genre"
-          value={genre}
-          onChange={(e) => setGenre(e.target.value)}
-          required
-        />
-      </div>
-      <div>
         <label htmlFor="stockQuantity">Stock Quantity:</label>
         <input
           type="number"
           id="stockQuantity"
           value={stockQuantity}
-          onChange={(e) => setStockQuantity(Number(e.target.value))}
+          onChange={handleStockQuantityChange} // 숫자만 입력 허용
           required
+          min="0"
+          step="1"
         />
       </div>
       <div>

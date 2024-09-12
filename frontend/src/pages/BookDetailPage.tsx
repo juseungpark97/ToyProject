@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store'; // RootState 타입을 사용하여 전체 상태의 타입을 가져옵니다.
 import api from '../utils/api';
 
 interface Book {
@@ -19,6 +21,7 @@ const BookDetailPage: React.FC = () => {
   const { bookId } = useParams<{ bookId: string }>();
   const [book, setBook] = useState<Book | null>(null);
   const [isRented, setIsRented] = useState<boolean>(false);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated); // Redux 상태에서 인증 여부 가져오기
 
   const fetchBookDetails = () => {
     api.get(`/api/books/${bookId}`).then((response) => {
@@ -27,12 +30,9 @@ const BookDetailPage: React.FC = () => {
   };
 
   useEffect(() => {
-    // 도서 정보 가져오기
     fetchBookDetails();
-
-    // 대여 상태 확인 API 호출
     api.post('/api/rentals/check', { bookId: Number(bookId) }).then((response) => {
-      setIsRented(response.data); // 대여 상태 설정
+      setIsRented(response.data);
     });
   }, [bookId]);
 
@@ -40,8 +40,8 @@ const BookDetailPage: React.FC = () => {
     try {
       await api.post('/api/rentals/rent', { bookId: Number(bookId) });
       alert('도서 대여에 성공했습니다!');
-      setIsRented(true); // 대여 상태 변경
-      fetchBookDetails(); // 도서 정보 다시 가져오기
+      setIsRented(true);
+      fetchBookDetails();
     } catch (err) {
       console.error('도서 대여 중 오류 발생:', err);
     }
@@ -51,8 +51,8 @@ const BookDetailPage: React.FC = () => {
     try {
       await api.post('/api/rentals/return', { bookId: Number(bookId) });
       alert('도서 반납에 성공했습니다!');
-      setIsRented(false); // 대여 상태 변경
-      fetchBookDetails(); // 도서 정보 다시 가져오기
+      setIsRented(false);
+      fetchBookDetails();
     } catch (err) {
       console.error('도서 반납 중 오류 발생:', err);
     }
@@ -70,9 +70,11 @@ const BookDetailPage: React.FC = () => {
           <p>재고 수량: {book.stockQuantity}</p>
           <p>카테고리: {book.category.name}</p>
           {!isRented ? (
-            <button onClick={handleRentBook}>대여하기</button> // 대여하기 버튼
+            <button onClick={handleRentBook} disabled={!isAuthenticated}>
+              대여하기
+            </button>
           ) : (
-            <button onClick={handleReturnBook}>반납하기</button> // 반납하기 버튼
+            <button onClick={handleReturnBook}>반납하기</button>
           )}
         </>
       ) : (

@@ -2,7 +2,6 @@ package com.js.bookforum.entity;
 
 import java.util.Date;
 import java.util.Set;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,17 +36,11 @@ public class Book {
 
     private Date publicationDate;
 
-    private String genre;
-
     private int stockQuantity;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "added_by")
-    private User addedBy;
 
     @OneToMany(mappedBy = "book")
     private Set<Rental> rentals;

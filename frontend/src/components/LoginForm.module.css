@@ -1,0 +1,83 @@
+/* LoginForm.module.css */
+
+/* 전체 페이지 레이아웃 */
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* 로고 스타일 */
+.logo {
+  width: 150px;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+/* 로그인 창 컨테이너 */
+.container {
+  max-width: 400px;
+  width: 100%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+
+  background-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 폼 스타일 */
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 폼 내부 요소를 수평 중앙 정렬 */
+}
+
+/* 레이블 스타일 */
+form label {
+  width: 100%;
+  text-align: left; /* 레이블을 왼쪽 정렬하여 입력 필드와 맞추기 */
+  margin-bottom: 8px;
+}
+
+/* 입력 필드 스타일 */
+.inputField {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 오류 메시지 스타일 */
+.error {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* 버튼 스타일 */
+.button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}

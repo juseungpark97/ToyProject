@@ -56,7 +56,8 @@ public class AuthController {
 
             String token = jwtTokenProvider.createToken(loginRequest.getEmail(), roles);
 
-            return ResponseEntity.ok(new AuthResponse(token));
+            // 이메일과 역할 정보를 포함한 응답 생성
+            return ResponseEntity.ok(new AuthResponse(token, loginRequest.getEmail(), roles));
         } catch (AuthenticationException e) {
             // 200 OK와 함께 에러 정보를 전달
             return ResponseEntity.ok(new ErrorResponse("로그인 실패: 이메일이나 비밀번호가 올바르지 않습니다.", 401));

@@ -1,7 +1,10 @@
 package com.js.bookforum.service;
 
 import java.util.Date;
+import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.js.bookforum.entity.Book;
@@ -52,6 +55,12 @@ public class RentalServiceImpl implements RentalService {
         
         book.setStockQuantity(book.getStockQuantity() + 1);
         bookRepository.save(book);
+    }
+	
+    
+    // 특정 사용자 ID로 대여 기록 페이징 조회
+    public Page<Rental> findRentalsByUserId(Long userId, Pageable pageable) {
+        return rentalRepository.findByUserUserId(userId, pageable);
     }
     
     

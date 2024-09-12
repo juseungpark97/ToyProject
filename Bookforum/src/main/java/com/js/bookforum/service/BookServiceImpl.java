@@ -28,10 +28,8 @@ public class BookServiceImpl implements BookService {
             updatedBook.setTitle(book.getTitle());
             updatedBook.setAuthor(book.getAuthor());
             updatedBook.setPublicationDate(book.getPublicationDate());
-            updatedBook.setGenre(book.getGenre());
             updatedBook.setStockQuantity(book.getStockQuantity());
             updatedBook.setCategory(book.getCategory());
-            updatedBook.setAddedBy(book.getAddedBy());
             return bookRepository.save(updatedBook);
         } else {
             throw new RuntimeException("Book not found");

@@ -54,7 +54,6 @@ public class BookController {
                     .title(title)
                     .author(author)
                     .publicationDate(java.sql.Date.valueOf(publicationDate))
-                    .genre(genre)
                     .stockQuantity(stockQuantity)
                     .imageUrl(imageUrl)
                     .category(category) // 조회된 카테고리 설정
