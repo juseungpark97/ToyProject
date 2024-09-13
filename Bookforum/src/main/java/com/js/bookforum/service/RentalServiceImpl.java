@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.js.bookforum.entity.Book;
 import com.js.bookforum.entity.Rental;
+import com.js.bookforum.entity.Review;
 import com.js.bookforum.entity.User;
 import com.js.bookforum.repository.BookRepository;
 import com.js.bookforum.repository.RentalRepository;
@@ -63,5 +64,6 @@ public class RentalServiceImpl implements RentalService {
         return rentalRepository.findByUserUserId(userId, pageable);
     }
     
+  
     
 }

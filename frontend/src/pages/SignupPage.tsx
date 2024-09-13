@@ -16,7 +16,7 @@ const SignupPage: React.FC = () => {
       // 회원가입 API 요청
       await api.post('/api/users', { email, password, name });
       alert('회원가입이 완료되었습니다.');
-      navigate('/login'); // 회원가입 후 로그인 페이지로 이동
+      navigate('/'); // 회원가입 후 로그인 페이지로 이동
     } catch (err: any) {
       setError(err.response?.data?.message || '회원가입 중 오류가 발생했습니다.');
     }

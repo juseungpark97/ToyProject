@@ -1,3 +1,4 @@
+// BookUpload.tsx
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 
@@ -6,11 +7,11 @@ interface Category {
   name: string;
 }
 
-const BookUploadPage: React.FC = () => {
+const BookUpload: React.FC = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [publicationDate, setPublicationDate] = useState('');
-  const [stockQuantity, setStockQuantity] = useState<string>('0'); // 기본값을 '0'으로 설정
+  const [stockQuantity, setStockQuantity] = useState<string>('0');
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -35,10 +36,7 @@ const BookUploadPage: React.FC = () => {
 
   const handleStockQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
-    // 숫자 입력만 허용 (숫자 외의 문자는 모두 제거)
-    const numericValue = value.replace(/[^0-9]/g, ''); 
-
+    const numericValue = value.replace(/[^0-9]/g, '');
     setStockQuantity(numericValue);
   };
 
@@ -46,7 +44,6 @@ const BookUploadPage: React.FC = () => {
     event.preventDefault();
     if (!file) return;
 
-    // 문자열로 입력된 stockQuantity를 int로 변환
     const parsedStockQuantity = parseInt(stockQuantity, 10);
 
     const formData = new FormData();
@@ -107,7 +104,7 @@ const BookUploadPage: React.FC = () => {
           type="number"
           id="stockQuantity"
           value={stockQuantity}
-          onChange={handleStockQuantityChange} // 숫자만 입력 허용
+          onChange={handleStockQuantityChange}
           required
           min="0"
           step="1"
@@ -143,4 +140,4 @@ const BookUploadPage: React.FC = () => {
   );
 };
 
-export default BookUploadPage;
+export default BookUpload;

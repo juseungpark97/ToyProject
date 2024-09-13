@@ -40,7 +40,6 @@ public class BookController {
                                         @RequestParam("title") String title,
                                         @RequestParam("author") String author,
                                         @RequestParam("publicationDate") String publicationDate,
-                                        @RequestParam("genre") String genre,
                                         @RequestParam("stockQuantity") int stockQuantity,
                                         @RequestParam("categoryId") Long categoryId) {
         try {
@@ -77,7 +76,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Book getBookById(@PathVariable Long id) {
+    public Book getBooById(@PathVariable Long id) {
         return bookService.getBookById(id);
     }
 

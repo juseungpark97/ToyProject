@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../redux/store'; // Redux 상태 타입 가져오기
-import { login, logout } from '../redux/slices/authSlice'; // 로그인 및 로그아웃 액션 가져오기
+import { RootState } from '../redux/store';
+import { login, logout } from '../redux/slices/authSlice';
 import api from '../utils/api';
-import styles from './LoginForm.module.css'; // CSS 모듈 가져오기
-import logo from '../assets/logo.png'; // 로고 이미지 가져오기
+import styles from './LoginForm.module.css';
+import logo from '../assets/logo.png';
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
@@ -14,32 +14,29 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const user = useSelector((state: RootState) => state.auth.user); // 로그인된 사용자 정보 가져오기
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       const response = await api.post('/auth/login', { email, password });
-  
+
       if (response.data.token) {
         const token = response.data.token;
-        const role = response.data.role; // 서버 응답에서 역할 정보 추출
-        const email = response.data.email; // 서버 응답에서 이메일 정보 추출
-  
-        // 로컬 스토리지에 저장
+        const role = response.data.role;
+        const email = response.data.email;
+
         localStorage.setItem('token', token);
-        localStorage.setItem('userEmail', email); 
-        localStorage.setItem('userRole', role); 
-  
-        // Redux 상태 업데이트
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', role);
+
         dispatch(login({ email, role }));
-  
-        // 사용자 역할이 "ADMIN"이면 관리자 페이지로 리다이렉트
+
         if (role?.toLowerCase() === 'admin') {
-          navigate('/admin'); 
+          navigate('/admin');
         }
-  
+
         alert('로그인 성공');
       } else if (response.data.status === 401) {
         setError('이메일이나 비밀번호가 틀렸습니다.');
@@ -51,8 +48,13 @@ const LoginForm: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('userEmail'); // 이메일 제거
+    localStorage.removeItem('userEmail');
     dispatch(logout());
+  };
+
+  // 회원가입 페이지로 이동하는 함수
+  const handleSignup = () => {
+    navigate('/signup');
   };
 
   return (
@@ -94,6 +96,10 @@ const LoginForm: React.FC = () => {
             </div>
             <button type="submit" className={styles.button}>로그인</button>
           </form>
+          {/* 회원가입 버튼 추가 */}
+          <button onClick={handleSignup} className={styles.signupButton}>
+            회원가입
+          </button>
         </div>
       )}
     </div>

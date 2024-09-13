@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,6 +85,16 @@ public class UserController {
             rental.getReturnDate(),
             rental.getUser().getName()
         ));
+    }
+    
+    @Operation(summary = "특정 사용자 조", description = "이메일로 사용자를 조회합니다.")
+    @GetMapping("/email/{userEmail}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String userEmail) {
+        User user = userService.findByEmail(userEmail);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
     }
     
     
