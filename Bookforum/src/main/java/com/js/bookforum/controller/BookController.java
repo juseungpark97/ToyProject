@@ -84,4 +84,10 @@ public class BookController {
     public List<Book> getAllBooks() {
         return bookService.getAllBooks();
     }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<Book>> searchBooks(@RequestParam("title") String title) {
+        List<Book> books = bookService.findBooksByTitleContaining(title); // 검색어가 포함된 책 목록 가져오기
+        return ResponseEntity.ok(books);
+    }
 }

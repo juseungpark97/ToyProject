@@ -4,8 +4,8 @@ import { RootState } from '../redux/store';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import LoginForm from '../components/LoginForm';
-import { logout } from '../redux/slices/authSlice'; // 로그아웃 액션 가져오기
-import styles from './HomePage.module.css'; // CSS 모듈 가져오기
+import { logout } from '../redux/slices/authSlice'; 
+import styles from './HomePage.module.css'; 
 
 interface Book {
   bookId: number;
@@ -24,48 +24,68 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [books, setBooks] = useState<Book[]>([]);
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated); // 로그인 상태
-  const user = useSelector((state: RootState) => state.auth.user); // 사용자 정보 가져오기
+  const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어 상태 추가
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
-    // 서버에서 책 정보를 가져옵니다.
+    fetchBooks(); // 컴포넌트가 처음 렌더링될 때 책 목록을 가져옴
+  }, []);
+
+  const fetchBooks = (title: string = '') => {
+    const endpoint = title ? `/api/books/search?title=${title}` : '/api/books';
     api
-      .get('/api/books')
+      .get(endpoint)
       .then((response) => {
-        setBooks(response.data); // 가져온 데이터를 상태에 저장
+        setBooks(response.data);
       })
       .catch((error) => {
         console.error('Error fetching books:', error);
       });
-  }, []);
+  };
 
   const handleBookClick = (bookId: number) => {
-    navigate(`/book/${bookId}`); // 상세 페이지로 이동
+    navigate(`/book/${bookId}`);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); // 토큰 제거
-    localStorage.removeItem('userEmail'); // 사용자 이메일 제거
-    dispatch(logout()); // 로그아웃 액션 호출
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
+    dispatch(logout());
   };
 
   const handleMyPage = () => {
     navigate('/mypage');
-  }
+  };
+
+  const handleSearch = () => {
+    fetchBooks(searchTerm); // 검색 버튼 클릭 시 검색어에 따라 책 목록을 가져옴
+  };
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSearch(); // 엔터 키를 눌렀을 때 검색 실행
+    }
+  };
 
   return (
     <div className={styles.container}>
-      {/* 헤더 섹션 */}
       <header className={styles.header}>
         <div className={styles.logo}>Book Forum</div>
         <div className={styles.searchContainer}>
-          <input type="text" className={styles.searchInput} placeholder="Search..." />
-          <button className={styles.searchButton}>Q</button>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
+             // 검색어 입력 상태 업데이트
+          />
+          <button onClick={handleSearch} className={styles.searchButton}>Q</button>
         </div>
       </header>
 
       <div className={styles.content}>
-        {/* 도서 목록 섹션 */}
         <main className={styles.main}>
           <h2>도서 목록</h2>
           <div className={styles.bookGrid}>
@@ -86,7 +106,6 @@ const HomePage: React.FC = () => {
           </div>
         </main>
 
-        {/* 로그인 섹션 */}
         <aside className={styles.sidebar}>
           {isAuthenticated ? (
             <div>

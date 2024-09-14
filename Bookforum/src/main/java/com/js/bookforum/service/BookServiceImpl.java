@@ -61,4 +61,8 @@ public class BookServiceImpl implements BookService {
     	return bookRepository.findById(bookId)
     			.orElseThrow();
     }
+    @Override
+    public List<Book> findBooksByTitleContaining(String title) {
+        return bookRepository.findByTitleContainingIgnoreCase(title); // 대소문자 무시하여 제목에 검색어가 포함된 책 찾기
+    }
 }
